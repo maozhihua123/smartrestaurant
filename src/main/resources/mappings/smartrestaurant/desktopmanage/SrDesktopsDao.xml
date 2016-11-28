@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.smartrestaurant.desktopmanage.dao.SrDesktopsDao">
+    
+	<sql id="srDesktopsColumns">
+		a.id AS "id",
+		a.number AS "number",
+		a.location AS "location",
+		a.size AS "size",
+		a.waiter AS "waiter",
+		a.accommodate AS "accommodate"
+	</sql>
+	
+	<sql id="srDesktopsJoins">
+	</sql>
+    
+	<select id="get" resultType="SrDesktops">
+		SELECT 
+			<include refid="srDesktopsColumns"/>
+		FROM sr_desktops a
+		<include refid="srDesktopsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SrDesktops">
+		SELECT 
+			<include refid="srDesktopsColumns"/>
+		FROM sr_desktops a
+		<include refid="srDesktopsJoins"/>
+		<where>
+			
+			<if test="number != null and number != ''">
+				AND a.number = #{number}
+			</if>
+			<if test="accommodate != null and accommodate != ''">
+				AND a.accommodate = #{accommodate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SrDesktops">
+		SELECT 
+			<include refid="srDesktopsColumns"/>
+		FROM sr_desktops a
+		<include refid="srDesktopsJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sr_desktops(
+			id,
+			number,
+			location,
+			size,
+			waiter,
+			accommodate
+		) VALUES (
+			#{id},
+			#{number},
+			#{location},
+			#{size},
+			#{waiter},
+			#{accommodate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sr_desktops SET 	
+			number = #{number},
+			location = #{location},
+			size = #{size},
+			waiter = #{waiter},
+			accommodate = #{accommodate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sr_desktops
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

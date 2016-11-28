@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.smartrestaurant.productsmanage.dao.SrProductsDao">
+    
+	<sql id="srProductsColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.tag_ids AS "tagIds",
+		a.sort AS "sort",
+		a.images AS "images",
+		a.description AS "description",
+		a.price AS "price",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.unit AS "unit",
+		a.ingredients AS "ingredients",
+		a.update_by AS "updateBy.id",
+		a.count AS "count",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.hot AS "hot",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="srProductsJoins">
+	</sql>
+    
+	<select id="get" resultType="SrProducts">
+		SELECT 
+			<include refid="srProductsColumns"/>
+		FROM sr_products a
+		<include refid="srProductsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SrProducts">
+		SELECT 
+			<include refid="srProductsColumns"/>
+		FROM sr_products a
+		<include refid="srProductsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="tagIds != null and tagIds != ''">
+				AND a.tag_ids LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tagIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tagIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tagIds},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SrProducts">
+		SELECT 
+			<include refid="srProductsColumns"/>
+		FROM sr_products a
+		<include refid="srProductsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sr_products(
+			id,
+			name,
+			tag_ids,
+			sort,
+			images,
+			description,
+			price,
+			create_by,
+			create_date,
+			unit,
+			ingredients,
+			update_by,
+			count,
+			update_date,
+			remarks,
+			hot,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{tagIds},
+			#{sort},
+			#{images},
+			#{description},
+			#{price},
+			#{createBy.id},
+			#{createDate},
+			#{unit},
+			#{ingredients},
+			#{updateBy.id},
+			#{count},
+			#{updateDate},
+			#{remarks},
+			#{hot},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sr_products SET 	
+			name = #{name},
+			tag_ids = #{tagIds},
+			sort = #{sort},
+			images = #{images},
+			description = #{description},
+			price = #{price},
+			unit = #{unit},
+			ingredients = #{ingredients},
+			update_by = #{updateBy.id},
+			count = #{count},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			hot = #{hot}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sr_products SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

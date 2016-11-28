@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.smartrestaurant.tagsmanage.dao.SrTagsDao">
+    
+	<sql id="srTagsColumns">
+		a.id AS "id",
+		a.value AS "value",
+		a.label AS "label",
+		a.type AS "type",
+		a.description AS "description",
+		a.sort AS "sort",
+		a.parent_id AS "parent.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="srTagsJoins">
+	</sql>
+    
+	<select id="get" resultType="SrTags">
+		SELECT 
+			<include refid="srTagsColumns"/>
+		FROM sys_dict a
+		<include refid="srTagsJoins"/>
+		WHERE a.id = #{id} AND type = 'TAGS'
+	</select>
+	
+	<select id="findList" resultType="SrTags">
+		SELECT 
+			<include refid="srTagsColumns"/>
+		FROM sys_dict a
+		<include refid="srTagsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="label != null and label != ''">
+				AND a.label = #{label}
+			</if>
+			AND type = 'TAGS'
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SrTags">
+		SELECT 
+			<include refid="srTagsColumns"/>
+		FROM sys_dict a
+		<include refid="srTagsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			 AND type = 'TAGS'
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_dict(
+			id, 
+			value, 
+			label, 
+			type, 
+			description, 
+			sort, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{value}, 
+			#{label}, 
+			'TAGS', 
+			'', 
+			#{sort}, 
+			'', 
+			now(), 
+			'', 
+			now(), 
+			'', 
+			'0'
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_dict SET 
+			value = #{value}, 
+			label = #{label}, 
+			type = #{type}, 
+			sort = #{sort}, 
+			update_date = now(),
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_dict SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
